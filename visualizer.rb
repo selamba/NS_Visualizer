@@ -143,9 +143,24 @@ class Visualizer
 		@all_layers << @out_layer
 		
 		# Рисование: связи между узлами
-		@in_layer.each do |in_node|
-			@inter_layers[0].each do |inter_node|
-				@arrows << Arrow.new(in_node, inter_node)
+		@in_layer.each do |node_in|
+			@inter_layers[0].each do |node_inter|
+				@arrows << Arrow.new(node_in, node_inter)
+			end
+		end
+		
+		@inter_layers.each_with_index do |array, idx|
+			break if idx == @inter_layers.size - 1
+			@inter_layers[idx].each do |node_from|
+				@inter_layers[idx + 1].each do |node_to|
+					@arrows << Arrow.new(node_from, node_to)
+				end
+			end
+		end
+		
+		@inter_layers[-1].each do |node_inter|
+			@out_layer.each do |node_out|
+				@arrows << Arrow.new(node_inter, node_out)
 			end
 		end
 		
@@ -186,4 +201,4 @@ class Visualizer
 end
 
 # Выполнение программы
-Visualizer.new.visualize 4, 3, 4, 1
+Visualizer.new.visualize(2, 3, 4, 1)
