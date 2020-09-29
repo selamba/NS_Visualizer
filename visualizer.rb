@@ -33,13 +33,46 @@ class Node < Circle
 
 end
 
+# Стрелка
+# Показывает связь между двумя узлами
+class Arrow
+	
+	attr_accessor :node_from, :node_to, :line, :triangle
+	
+	def initialize(node_from, node_to)
+		if node_from.class != Node or node_to.class != Node
+			puts "ARROW INITIALIZED WITH NON-NODE!!!"
+			return
+		end
+		
+		@node_from = node_from
+		@node_to = node_to
+		
+		draw
+	end
+
+	def draw
+		@line = Line.new(
+			x1: @node_from.x, y1: @node_from.y,
+			x2: @node_to.x, y2: @node_to.y,
+			width: 5, color: "black",
+			z: -10
+		)
+	end
+	
+end
+
 class Visualizer
 	
-	attr_accessor :in_layer, :inter_layers, :out_layer, :all_layers
+	attr_accessor :in_layer, :inter_layers, :out_layer, :all_layers, :arrows
 	
 	def initialize
 		super
-		@in_layer, @inter_layers, @out_layer, @all_layers = [], [], [], []
+		@in_layer = Array.new
+		@inter_layers = Array.new
+		@out_layer = Array.new
+		@all_layers = Array.new
+		@arrows = Array.new
 	end
 	
 	def visualize(num_in_nodes = -1, num_inter_layers = -1, num_inter_nodes = -1, num_out_nodes = -1, debug = false)
@@ -109,9 +142,12 @@ class Visualizer
 		end
 		@all_layers << @out_layer
 		
-		# TEST LINE DRAW
-		
-		# TEST LINE DRAW
+		# Рисование: связи между узлами
+		@in_layer.each do |in_node|
+			@inter_layers[0].each do |inter_node|
+				@arrows << Arrow.new(in_node, inter_node)
+			end
+		end
 		
 		# Обработка ввода с клавиатуры/мыши
 		Window.on :key do |event|
@@ -143,7 +179,6 @@ class Visualizer
 			end
 		end
 		
-		
 		# Показ окна
 		Window.show
 	end
@@ -151,4 +186,4 @@ class Visualizer
 end
 
 # Выполнение программы
-Visualizer.new.visualize 4, 3, 4, 1, true
+Visualizer.new.visualize 4, 3, 4, 1
